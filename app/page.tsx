@@ -18,24 +18,58 @@ function ParticleCanvas() {
     let animId: number;
     type P = { x: number; y: number; vx: number; vy: number; size: number; color: string; life: number; max: number };
     const particles: P[] = [];
-    const cols = ["#ff6600", "#ff8c00", "#ffaa44", "#4488ff", "#00aaff", "#8844dd"];
+    const bullCols = ["#00ff66", "#00cc88", "#ccff00"];
+    const horseCols = ["#ff6600", "#ff8c00", "#ffaa44"];
+
     const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener("resize", resize);
+
     let f = 0;
     const loop = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       f++;
-      if (f % 5 === 0) {
-        const max = 120 + Math.random() * 160;
-        particles.push({ x: Math.random() * canvas.width, y: canvas.height + 5, vx: (Math.random() - .5) * .7, vy: -(0.4 + Math.random() * 1.2), size: .8 + Math.random() * 2, color: cols[Math.floor(Math.random() * cols.length)], life: 0, max });
+
+      // Spawn Bull particles (Left)
+      if (f % 3 === 0) {
+        for (let i = 0; i < 2; i++) {
+          const max = 300 + Math.random() * 400;
+          particles.push({
+            x: Math.random() * (canvas.width * 0.35),
+            y: canvas.height + 10,
+            vx: (Math.random() - 0.2) * 1.2,
+            vy: -(1.2 + Math.random() * 3.0),
+            size: 0.8 + Math.random() * 3,
+            color: bullCols[Math.floor(Math.random() * bullCols.length)],
+            life: 0,
+            max
+          });
+        }
       }
+
+      // Spawn Horse particles (Right)
+      if (f % 3 === 1) {
+        for (let i = 0; i < 2; i++) {
+          const max = 300 + Math.random() * 400;
+          particles.push({
+            x: canvas.width - (Math.random() * (canvas.width * 0.35)),
+            y: canvas.height + 10,
+            vx: (Math.random() - 0.8) * 1.2,
+            vy: -(1.2 + Math.random() * 3.0),
+            size: 0.8 + Math.random() * 3,
+            color: horseCols[Math.floor(Math.random() * horseCols.length)],
+            life: 0,
+            max
+          });
+        }
+      }
+
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i]; p.life++; p.x += p.vx; p.y += p.vy;
         const t = p.life / p.max;
         const a = t < .15 ? t / .15 : t > .7 ? 1 - (t - .7) / .3 : 1;
         if (p.life >= p.max) { particles.splice(i, 1); continue; }
-        ctx.save(); ctx.globalAlpha = a * .65; ctx.shadowColor = p.color; ctx.shadowBlur = 8;
+        ctx.save(); ctx.globalAlpha = a * .6; ctx.shadowColor = p.color; ctx.shadowBlur = 10;
         ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
       animId = requestAnimationFrame(loop);
@@ -220,18 +254,7 @@ export default function Home() {
           {/* ── Hero text ── */}
           <div style={{ textAlign: "center", maxWidth: "780px", marginBottom: "56px" }}>
             {/* Badge */}
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: "10px",
-              padding: "5px 20px", borderRadius: "100px",
-              border: "1px solid rgba(255,102,0,0.28)",
-              background: "rgba(255,102,0,0.06)",
-              marginBottom: "28px",
-              animation: "slide-up-reveal 0.8s ease 0.1s both",
-            }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ff6600", boxShadow: "0 0 8px #ff6600", display: "inline-block" }} />
-              <span style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "0.67rem", letterSpacing: "0.22em", color: "rgba(255,176,64,0.9)", textTransform: "uppercase" }}>Sahasra TechFest 2026</span>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4488ff", boxShadow: "0 0 8px #4488ff", display: "inline-block" }} />
-            </div>
+            
 
             {/* Title */}
             <h1 style={{
@@ -324,6 +347,8 @@ export default function Home() {
             zIndex: 1, pointerEvents: "none",
             animation: "slide-up-reveal 1.5s ease 0.5s both",
             opacity: 0.85,
+            maskImage: "radial-gradient(ellipse at center, black 50%, transparent 95%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 50%, transparent 95%)",
           }}>
             <div style={{
               width: "100%", height: "100%",
@@ -341,6 +366,8 @@ export default function Home() {
             zIndex: 1, pointerEvents: "none",
             animation: "slide-up-reveal 1.5s ease 0.6s both",
             opacity: 0.85,
+            maskImage: "radial-gradient(ellipse at center, black 50%, transparent 95%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 50%, transparent 95%)",
           }}>
             <div style={{
               width: "100%", height: "100%",

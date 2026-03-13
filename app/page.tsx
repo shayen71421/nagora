@@ -1,65 +1,368 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-export default function Home() {
+type Phase = "loading" | "entering" | "ready";
+
+/* ─────────────────────────────────────────────────
+   PARTICLE CANVAS
+───────────────────────────────────────────────── */
+function ParticleCanvas() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let animId: number;
+    type P = { x: number; y: number; vx: number; vy: number; size: number; color: string; life: number; max: number };
+    const particles: P[] = [];
+    const cols = ["#ff6600", "#ff8c00", "#ffaa44", "#4488ff", "#00aaff", "#8844dd"];
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    resize();
+    window.addEventListener("resize", resize);
+    let f = 0;
+    const loop = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      f++;
+      if (f % 5 === 0) {
+        const max = 120 + Math.random() * 160;
+        particles.push({ x: Math.random() * canvas.width, y: canvas.height + 5, vx: (Math.random() - .5) * .7, vy: -(0.4 + Math.random() * 1.2), size: .8 + Math.random() * 2, color: cols[Math.floor(Math.random() * cols.length)], life: 0, max });
+      }
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]; p.life++; p.x += p.vx; p.y += p.vy;
+        const t = p.life / p.max;
+        const a = t < .15 ? t / .15 : t > .7 ? 1 - (t - .7) / .3 : 1;
+        if (p.life >= p.max) { particles.splice(i, 1); continue; }
+        ctx.save(); ctx.globalAlpha = a * .65; ctx.shadowColor = p.color; ctx.shadowBlur = 8;
+        ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      }
+      animId = requestAnimationFrame(loop);
+    };
+    loop();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={ref} style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none" }} />;
+}
+
+/* ─────────────────────────────────────────────────
+   ROLE CARD
+───────────────────────────────────────────────── */
+function RoleCard({ icon, label, description, accentColor, borderColor, delay }: {
+  icon: string; label: string; description: string;
+  accentColor: string; borderColor: string; delay: string;
+}) {
+  const [hov, setHov] = useState(false);
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div
+      className="role-card"
+      style={{
+        "--card-grad": `linear-gradient(135deg, ${accentColor}14, transparent)`,
+        "--card-border": `linear-gradient(135deg, ${accentColor}55, ${accentColor}15)`,
+        boxShadow: hov
+          ? `0 24px 60px ${accentColor}22, 0 0 0 1px ${accentColor}33`
+          : `0 0 0 1px ${borderColor}`,
+        animation: `scale-up 0.7s ease ${delay} both`,
+      } as React.CSSProperties}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
+      <div className="role-card-border" style={{ "--card-border": `linear-gradient(135deg, ${accentColor}55, ${accentColor}15)` } as React.CSSProperties} />
+      <div style={{ position: "absolute", top: 0, left: "20%", width: "60%", height: "2px", background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`, boxShadow: hov ? `0 0 20px ${accentColor}` : "none", transition: "box-shadow 0.4s ease" }} />
+      <div style={{ width: "70px", height: "70px", borderRadius: "50%", background: `radial-gradient(circle, ${accentColor}22, ${accentColor}08)`, border: `1.5px solid ${accentColor}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", boxShadow: hov ? `0 0 30px ${accentColor}55` : "none", transition: "box-shadow 0.4s ease, transform 0.4s ease", transform: hov ? "scale(1.1)" : "scale(1)" }}>
+        {icon}
+      </div>
+      <div style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "1rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: accentColor, textShadow: hov ? `0 0 15px ${accentColor}88` : "none", transition: "text-shadow 0.4s ease", textAlign: "center" }}>
+        {label}
+      </div>
+      <div style={{ fontSize: "0.82rem", color: "rgba(216,232,255,0.5)", lineHeight: 1.65, textAlign: "center", maxWidth: "200px" }}>
+        {description}
+      </div>
+      <div style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: accentColor, opacity: hov ? 1 : 0, transform: hov ? "translateY(0)" : "translateY(4px)", transition: "all 0.3s ease", textTransform: "uppercase" }}>
+        Enter →
+      </div>
     </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────
+   MAIN PAGE
+───────────────────────────────────────────────── */
+export default function Home() {
+  const [phase, setPhase] = useState<Phase>("loading");
+  const [loadProgress, setLoadProgress] = useState(0);
+
+  /* ── Simplified loading progress ── */
+  useEffect(() => {
+    if (phase !== "loading") return;
+
+    let prog = 0;
+    const interval = setInterval(() => {
+      prog += Math.random() * 10 + 5;
+      if (prog >= 100) {
+        prog = 100;
+        setLoadProgress(100);
+        clearInterval(interval);
+        setTimeout(() => {
+          setPhase("entering");
+          setTimeout(() => setPhase("ready"), 800);
+        }, 600);
+      } else {
+        setLoadProgress(prog);
+      }
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  const showContent = phase === "entering" || phase === "ready";
+
+  return (
+    <>
+      {/* ── Ambient BG (always) ── */}
+      <div aria-hidden style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        background: `
+          radial-gradient(ellipse 100% 60% at 50% -5%,  rgba(255,102,0,0.09) 0%, transparent 55%),
+          radial-gradient(ellipse 70%  50% at 10% 90%,  rgba(68,136,255,0.08) 0%, transparent 55%),
+          radial-gradient(ellipse 70%  50% at 90% 90%,  rgba(255,68,0,0.07)   0%, transparent 55%),
+          #040610
+        `,
+      }} />
+
+      <ParticleCanvas />
+
+      {/* ═══════════════════════════════════════════
+          LOADING SCREEN — Clean & Fast
+      ═══════════════════════════════════════════ */}
+      {phase === "loading" && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 100,
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          background: "#040610",
+        }}>
+          {/* Loading content overlay */}
+          <div style={{
+            position: "relative", zIndex: 10,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", gap: "28px",
+          }}>
+            {/* Statue Icon */}
+            <div style={{ position: "relative", width: "100px", height: "100px", animation: "float-slow 4s ease-in-out infinite" }}>
+              <Image src="/a.png" alt="" fill style={{ objectFit: "contain", opacity: 0.9 }} />
+            </div>
+
+            {/* Brand */}
+            <div style={{ textAlign: "center" }}>
+              <div style={{
+                fontFamily: "var(--font-cinzel-decorative), serif",
+                fontSize: "2.4rem", fontWeight: 900, letterSpacing: "0.15em",
+                background: "linear-gradient(90deg, #ff6600, #ff8c00, #ffcc44, #ff8c00, #ff6600)",
+                backgroundSize: "200% auto",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                animation: "shimmer-fire 3s linear infinite",
+              }}>NAGORA</div>
+              <div style={{
+                fontFamily: "var(--font-cinzel), serif",
+                fontSize: "0.65rem", letterSpacing: "0.35em",
+                color: "rgba(68,136,255,0.75)", marginTop: "6px", textTransform: "uppercase",
+              }}>Sahasra TechFest 2026</div>
+            </div>
+
+            {/* Animated loading bar */}
+            <div style={{ width: "220px" }}>
+              <div style={{
+                height: "2px", background: "rgba(255,255,255,0.08)",
+                borderRadius: "1px", overflow: "hidden",
+              }}>
+                <div style={{
+                  height: "100%", width: `${loadProgress}%`,
+                  background: "linear-gradient(90deg, #ff6600, #ff8c00, #ffcc44)",
+                  boxShadow: "0 0 10px #ff8c00",
+                  borderRadius: "1px",
+                  transition: "width 0.2s ease",
+                }} />
+              </div>
+              <div style={{
+                fontFamily: "var(--font-cinzel), serif",
+                fontSize: "0.58rem", letterSpacing: "0.22em",
+                color: "rgba(216,232,255,0.3)", textAlign: "center",
+                marginTop: "12px", textTransform: "uppercase",
+              }}>
+                The Oracle is Awakening…
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* ═══════════════════════════════════════════
+          MAIN CONTENT — revealed after video ends
+      ═══════════════════════════════════════════ */}
+      {showContent && (
+        <main style={{
+          position: "relative", zIndex: 2, minHeight: "100vh",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          padding: "60px 24px 80px",
+          animation: "content-enter 1s ease both",
+        }}>
+          {/* Top neon border */}
+          <div style={{
+            position: "fixed", top: 0, left: 0, width: "100%", height: "2px",
+            background: "linear-gradient(90deg, transparent, #ff6600 30%, #ff8c00 50%, #4488ff 70%, transparent)",
+            boxShadow: "0 0 20px #ff6600", zIndex: 10,
+          }} />
+
+          {/* ── Hero text ── */}
+          <div style={{ textAlign: "center", maxWidth: "780px", marginBottom: "56px" }}>
+            {/* Badge */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: "10px",
+              padding: "5px 20px", borderRadius: "100px",
+              border: "1px solid rgba(255,102,0,0.28)",
+              background: "rgba(255,102,0,0.06)",
+              marginBottom: "28px",
+              animation: "slide-up-reveal 0.8s ease 0.1s both",
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ff6600", boxShadow: "0 0 8px #ff6600", display: "inline-block" }} />
+              <span style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "0.67rem", letterSpacing: "0.22em", color: "rgba(255,176,64,0.9)", textTransform: "uppercase" }}>Sahasra TechFest 2026</span>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4488ff", boxShadow: "0 0 8px #4488ff", display: "inline-block" }} />
+            </div>
+
+            {/* Title */}
+            <h1 style={{
+              fontFamily: "var(--font-cinzel-decorative), serif",
+              fontSize: "clamp(3.5rem, 11vw, 8rem)",
+              fontWeight: 900, lineHeight: 1, letterSpacing: "0.06em",
+              marginBottom: "16px",
+              animation: "slide-up-reveal 0.9s ease 0.25s both",
+            }}>
+              <span className="gradient-fire">NAGORA</span>
+            </h1>
+
+            {/* Tagline */}
+            <div style={{
+              fontFamily: "var(--font-cinzel), serif",
+              fontSize: "clamp(0.75rem, 2vw, 0.95rem)",
+              letterSpacing: "0.4em", textTransform: "uppercase",
+              color: "rgba(68,136,255,0.65)", marginBottom: "24px",
+              animation: "slide-up-reveal 0.8s ease 0.4s both",
+            }}>✦ &nbsp;Finance of the Gods&nbsp; ✦</div>
+
+            {/* Description */}
+            <p style={{
+              fontSize: "clamp(0.95rem, 2vw, 1.08rem)",
+              color: "rgba(216,232,255,0.55)", lineHeight: 1.85,
+              maxWidth: "540px", margin: "0 auto 44px",
+              animation: "slide-up-reveal 0.8s ease 0.55s both",
+            }}>
+              The official finance management platform for{" "}
+              <span style={{ color: "#ff8c00", fontWeight: 600 }}>Sahasra TechFest</span>.{" "}
+              Select your role to enter the Agora and govern your treasury.
+            </p>
+
+            {/* Divider */}
+            <div className="divider" style={{ marginBottom: "44px", animation: "fade-in 1s ease 0.65s both" }} />
+
+            {/* Role selector label */}
+            <div style={{
+              fontFamily: "var(--font-cinzel), serif",
+              fontSize: "0.7rem", letterSpacing: "0.3em",
+              textTransform: "uppercase", color: "rgba(216,232,255,0.3)",
+              marginBottom: "24px",
+              animation: "fade-in 0.8s ease 0.75s both",
+            }}>
+              Choose your role to continue
+            </div>
+
+            {/* ── Role Cards ── */}
+            <div className="roles-grid" style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "20px",
+              maxWidth: "760px",
+              margin: "0 auto",
+            }}>
+              <RoleCard
+                icon="🎓" label="Student"
+                description="Track event fees, view payment status, and manage personal allocations."
+                accentColor="#ff6600" borderColor="rgba(255,102,0,0.15)" delay="0.8s"
+              />
+              <RoleCard
+                icon="🏛️" label="Class Rep"
+                description="Manage class-level budgets, submit expense requests, and coordinate with dept."
+                accentColor="#ff8c00" borderColor="rgba(255,140,0,0.15)" delay="0.95s"
+              />
+              <RoleCard
+                icon="📜" label="Dept Rep"
+                description="Oversee department treasury, approve allocations, and generate financial reports."
+                accentColor="#00ff66" borderColor="rgba(0,255,102,0.15)" delay="1.1s"
+              />
+            </div>
+
+            {/* Coming soon */}
+            <div style={{
+              marginTop: "26px",
+              fontFamily: "var(--font-cinzel), serif",
+              fontSize: "0.6rem", letterSpacing: "0.18em",
+              color: "rgba(216,232,255,0.2)", textTransform: "uppercase",
+              animation: "fade-in 1s ease 1.4s both",
+            }}>
+              More roles coming soon — Organizer &nbsp;·&nbsp; Treasurer &nbsp;·&nbsp; Admin
+            </div>
+          </div>
+
+          {/* ── Massive Floating bull mascot (bottom-left) ── */}
+          <div style={{
+            position: "fixed", left: "clamp(-100px, -5vw, -20px)", bottom: "-20vh",
+            width: "clamp(500px, 75vw, 1400px)",
+            height: "clamp(600px, 90vh, 1600px)",
+            zIndex: 1, pointerEvents: "none",
+            animation: "slide-up-reveal 1.5s ease 0.5s both",
+            opacity: 0.85,
+          }}>
+            <div style={{
+              width: "100%", height: "100%",
+              filter: "drop-shadow(0 20px 80px rgba(0,255,102,0.4)) drop-shadow(0 0 120px rgba(0,255,102,0.2))",
+            }}>
+              <Image src="/b.png" alt="Nagora Bull Mascot" fill style={{ objectFit: "contain", objectPosition: "bottom left" }} />
+            </div>
+          </div>
+
+          {/* ── Massive Still horse mascot (bottom-right) ── */}
+          <div style={{
+            position: "fixed", right: "clamp(-150px, -8vw, -20px)", bottom: "-25vh",
+            width: "clamp(600px, 85vw, 1600px)",
+            height: "clamp(700px, 100vh, 1800px)",
+            zIndex: 1, pointerEvents: "none",
+            animation: "slide-up-reveal 1.5s ease 0.6s both",
+            opacity: 0.85,
+          }}>
+            <div style={{
+              width: "100%", height: "100%",
+              filter: "drop-shadow(0 20px 80px rgba(255,102,0,0.4)) drop-shadow(0 0 120px rgba(255,102,0,0.2))",
+            }}>
+              <Image src="/c.png" alt="Nagora Horse Mascot" fill style={{ objectFit: "contain", objectPosition: "bottom right" }} />
+            </div>
+          </div>
+
+          {/* ── Footer ── */}
+          <div style={{
+            position: "fixed", bottom: "18px", left: "50%", transform: "translateX(-50%)",
+            fontFamily: "var(--font-cinzel), serif",
+            fontSize: "0.58rem", letterSpacing: "0.15em",
+            color: "rgba(216,232,255,0.18)", textTransform: "uppercase",
+            whiteSpace: "nowrap", zIndex: 10,
+            animation: "fade-in 1s ease 1.6s both",
+          }}>
+            © 2026 Sahasra TechFest &nbsp;·&nbsp; NAGORA Finance &nbsp;·&nbsp; Built for Olympians
+          </div>
+        </main>
+      )}
+    </>
   );
 }

@@ -1,26 +1,442 @@
 @import "tailwindcss";
 
+/* =========================================
+   NAGORA — Neon Greek Ruins Theme
+   Palette: deep midnight + neon orange fire + electric blue
+   ========================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-void: #040610;
+  --bg-deep: #060812;
+  --bg-ruins: #08091a;
+
+  /* Neon fire (orange rings in video) */
+  --fire-core: #ff6600;
+  --fire-bright: #ff8c00;
+  --fire-glow: #ffaa00;
+  --fire-pale: #ffd080;
+
+  /* Electric blue (lightning + blue ring) */
+  --elec-core: #1155ff;
+  --elec-bright: #4488ff;
+  --elec-glow: #00aaff;
+  --elec-pale: #aaccff;
+
+  /* Purple haze */
+  --purple-haze: #6622cc;
+  --purple-mid: #8844dd;
+
+  /* Neon Green (Bull) */
+  --neon-green: #00ff66;
+  --neon-emerald: #00cc88;
+  --neon-glow: #00ff66aa;
+
+  /* Text */
+  --text-bright: #d8e8ff;
+  --text-mid: #8899bb;
+  --text-dim: #445566;
+
+  /* Surfaces */
+  --glass-bg: rgba(8, 10, 28, 0.72);
+  --glass-fire: rgba(255, 102, 0, 0.08);
+  --glass-elec: rgba(68, 136, 255, 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-void);
+  color: var(--text-bright);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+  min-height: 100%;
+}
+
+::selection {
+  background: rgba(255, 102, 0, 0.25);
+  color: var(--fire-pale);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--fire-core), var(--elec-bright));
+  border-radius: 3px;
+}
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+
+@keyframes loading-bar {
+  0% {
+    width: 0%;
+  }
+
+  40% {
+    width: 55%;
+  }
+
+  80% {
+    width: 85%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes pulse-ring {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes shimmer-fire {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes shimmer-elec {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes shimmer-green {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes slide-up-reveal {
+  from {
+    transform: translateY(60px);
+    opacity: 0;
+    filter: blur(8px);
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-up {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes lightning-flash {
+
+  0%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+
+  92% {
+    opacity: 0.6;
+  }
+
+  94% {
+    opacity: 0;
+  }
+
+  96% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes orbit-fire {
+  from {
+    transform: rotate(0deg) translateX(var(--orbit-r, 180px)) rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg) translateX(var(--orbit-r, 180px)) rotate(-360deg);
+  }
+}
+
+@keyframes orbit-elec {
+  from {
+    transform: rotate(0deg) translateX(var(--orbit-r, 180px)) rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg) translateX(var(--orbit-r, 180px)) rotate(360deg);
+  }
+}
+
+@keyframes neon-flicker {
+
+  0%,
+  89%,
+  91%,
+  96%,
+  100% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 0.6;
+  }
+
+  95% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes video-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes content-enter {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes particle-up {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(-120vh) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes ruins-glow {
+
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+
+  50% {
+    filter: brightness(1.12) saturate(1.2);
+  }
+}
+
+@keyframes spin-ring {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   GRADIENT TEXT
+   ========================================= */
+.gradient-fire {
+  background: linear-gradient(90deg, #ff4400 0%, #ff6600 20%, #ff8c00 45%, #ffcc44 65%, #ff8c00 85%, #ff4400 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-fire 5s linear infinite;
+}
+
+.gradient-elec {
+  background: linear-gradient(90deg, #1144ff 0%, #4488ff 30%, #00ccff 55%, #4488ff 80%, #1144ff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-elec 4s linear infinite;
+}
+
+.gradient-dual {
+  background: linear-gradient(90deg, #ff6600 0%, #ff8c00 20%, #ffcc44 40%, #00aaff 60%, #4488ff 80%, #ff6600 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-fire 6s linear infinite;
+}
+
+.gradient-green {
+  background: linear-gradient(90deg, #00ff66 0%, #00cc88 25%, #ccff00 50%, #00cc88 75%, #00ff66 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-green 5s linear infinite;
+}
+
+/* =========================================
+   GLASS CARD
+   ========================================= */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================
+   ROLE CARD (the 3 buttons)
+   ========================================= */
+.role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 36px 28px;
+  border-radius: 16px;
+  background: rgba(8, 10, 28, 0.7);
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.role-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--card-grad, linear-gradient(135deg, rgba(255, 102, 0, 0.08), transparent));
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.role-card:hover::before {
+  opacity: 1;
+}
+
+.role-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.role-card-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: var(--card-border, linear-gradient(135deg, rgba(255, 102, 0, 0.4), rgba(255, 102, 0, 0.1)));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* =========================================
+   DIVIDER
+   ========================================= */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--fire-core) 30%, var(--elec-bright) 70%, transparent);
+  box-shadow: 0 0 12px var(--fire-core);
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+  .roles-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 12vw, 5rem) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .roles-grid {
+    grid-template-columns: 1fr !important;
+  }
 }

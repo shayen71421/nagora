@@ -290,13 +290,13 @@ export default function Home() {
             <div className="roles-grid" style={{
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "20px",
-              maxWidth: "760px",
+              gap: "16px",
+              maxWidth: "600px",
               margin: "0 auto",
             }}>
               <RoleCard
                 label="Student"
-                accentColor="#ff6600" borderColor="rgba(255,102,0,0.15)" delay="0.8s"
+                accentColor="#0099ffff" borderColor="rgba(0, 153, 255, 0.15)" delay="0.8s"
               />
               <RoleCard
                 label="Class Rep"

@@ -336,7 +336,7 @@ export default function DepartmentPage() {
                 Sign in with your department email
               </p>
               <p style={{ color: "rgba(168,190,224,0.7)", fontSize: "0.86rem", marginBottom: "16px" }}>
-                Authorised addresses: aces · ebsa · beats · pace · elecsta · adroit @sahrdaya.ac.in
+                Authorised addresses: aces · ebsa · beats · pace · elecsta · aeson @sahrdaya.ac.in
               </p>
               <button
                 type="button"

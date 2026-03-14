@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Phase = "loading" | "entering" | "ready";
 
@@ -83,13 +84,14 @@ function ParticleCanvas() {
 /* ─────────────────────────────────────────────────
    ROLE CARD
 ───────────────────────────────────────────────── */
-function RoleCard({ label, accentColor, borderColor, delay }: {
+function RoleCard({ label, accentColor, borderColor, delay, href }: {
   label: string;
-  accentColor: string; borderColor: string; delay: string;
+  accentColor: string; borderColor: string; delay: string; href: string;
 }) {
   const [hov, setHov] = useState(false);
   return (
-    <div
+    <Link
+      href={href}
       className="role-card"
       style={{
         "--card-grad": `linear-gradient(135deg, ${accentColor}14, transparent)`,
@@ -98,6 +100,7 @@ function RoleCard({ label, accentColor, borderColor, delay }: {
           ? `0 24px 60px ${accentColor}22, 0 0 0 1px ${accentColor}33`
           : `0 0 0 1px ${borderColor}`,
         animation: `scale-up 0.7s ease ${delay} both`,
+        textDecoration: "none",
       } as React.CSSProperties}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
@@ -110,7 +113,7 @@ function RoleCard({ label, accentColor, borderColor, delay }: {
       <div style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: accentColor, opacity: hov ? 1 : 0, transform: hov ? "translateY(0)" : "translateY(4px)", transition: "all 0.3s ease", textTransform: "uppercase" }}>
         Enter →
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -296,15 +299,15 @@ export default function Home() {
             }}>
               <RoleCard
                 label="Student"
-                accentColor="#0099ffff" borderColor="rgba(0, 153, 255, 0.15)" delay="0.8s"
+                accentColor="#0099ffff" borderColor="rgba(0, 153, 255, 0.15)" delay="0.8s" href="/student"
               />
               <RoleCard
                 label="Class Rep"
-                accentColor="#ff8c00" borderColor="rgba(255,140,0,0.15)" delay="0.95s"
+                accentColor="#ff8c00" borderColor="rgba(255,140,0,0.15)" delay="0.95s" href="/rep"
               />
               <RoleCard
                 label="Dept Rep"
-                accentColor="#00ff66" borderColor="rgba(0,255,102,0.15)" delay="1.1s"
+                accentColor="#00ff66" borderColor="rgba(0,255,102,0.15)" delay="1.1s" href="/department"
               />
             </div>
 

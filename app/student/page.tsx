@@ -9,6 +9,11 @@ import {
   signOut,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+
+type RepInfo = {
+  paymentConfirmedByRep: boolean;
+  paymentMethod: "direct" | "coupon" | "";
+};
 import { auth, db } from "@/utils/firebase";
 import ParticleCanvas from "@/app/components/ParticleCanvas";
 
@@ -77,6 +82,7 @@ export default function StudentPage() {
   const [profile, setProfile] = useState<StudentProfile>(EMPTY_PROFILE);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [repInfo, setRepInfo] = useState<RepInfo | null>(null);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [hasSavedProfile, setHasSavedProfile] = useState(false);
@@ -92,6 +98,7 @@ export default function StudentPage() {
       if (!authUser) {
         setUser(null);
         setProfile(EMPTY_PROFILE);
+        setRepInfo(null);
         setHasSavedProfile(false);
         setIsEditing(true);
         return;
@@ -119,6 +126,11 @@ export default function StudentPage() {
           });
           setHasSavedProfile(true);
           setIsEditing(false);
+          // Load rep confirmation
+          const confSnap = await getDoc(doc(db, "rep_confirmations", authUser.uid));
+          if (confSnap.exists()) {
+            setRepInfo(confSnap.data() as RepInfo);
+          }
         } else {
           setProfile({ ...EMPTY_PROFILE, email: authUser.email ?? "" });
           setHasSavedProfile(false);
@@ -444,6 +456,44 @@ export default function StudentPage() {
                       <p className="text-sm text-[#d8e8ff]">
                         {profile.paid === "yes" ? "Yes, paid" : "No, not paid"}
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Rep-set fields — read only */}
+                  <div
+                    style={{
+                      marginTop: "4px",
+                      borderRadius: "12px",
+                      border: "1px solid rgba(68,136,255,0.28)",
+                      background: "rgba(68,136,255,0.06)",
+                      padding: "12px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "var(--font-cinzel), serif",
+                        fontSize: "0.6rem",
+                        letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        color: "rgba(68,136,255,0.9)",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Set by class rep · read only
+                    </p>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="rounded-lg border border-white/10 bg-black/20 p-3">
+                        <p style={labelStyle}>Payment confirmed by rep</p>
+                        <p className="text-sm" style={{ color: repInfo?.paymentConfirmedByRep ? "#00ff88" : "rgba(168,186,224,0.45)" }}>
+                          {repInfo ? (repInfo.paymentConfirmedByRep ? "Yes, confirmed" : "Not confirmed yet") : "Pending"}
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-white/10 bg-black/20 p-3">
+                        <p style={labelStyle}>Payment method</p>
+                        <p className="text-sm text-[#d8e8ff]" style={{ textTransform: "capitalize" }}>
+                          {repInfo?.paymentMethod || "Not set"}
+                        </p>
+                      </div>
                     </div>
                   </div>
 

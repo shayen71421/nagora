@@ -83,8 +83,8 @@ function ParticleCanvas() {
 /* ─────────────────────────────────────────────────
    ROLE CARD
 ───────────────────────────────────────────────── */
-function RoleCard({ icon, label, description, accentColor, borderColor, delay }: {
-  icon: string; label: string; description: string;
+function RoleCard({ label, accentColor, borderColor, delay }: {
+  label: string;
   accentColor: string; borderColor: string; delay: string;
 }) {
   const [hov, setHov] = useState(false);
@@ -104,14 +104,8 @@ function RoleCard({ icon, label, description, accentColor, borderColor, delay }:
     >
       <div className="role-card-border" style={{ "--card-border": `linear-gradient(135deg, ${accentColor}55, ${accentColor}15)` } as React.CSSProperties} />
       <div style={{ position: "absolute", top: 0, left: "20%", width: "60%", height: "2px", background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`, boxShadow: hov ? `0 0 20px ${accentColor}` : "none", transition: "box-shadow 0.4s ease" }} />
-      <div style={{ width: "70px", height: "70px", borderRadius: "50%", background: `radial-gradient(circle, ${accentColor}22, ${accentColor}08)`, border: `1.5px solid ${accentColor}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", boxShadow: hov ? `0 0 30px ${accentColor}55` : "none", transition: "box-shadow 0.4s ease, transform 0.4s ease", transform: hov ? "scale(1.1)" : "scale(1)" }}>
-        {icon}
-      </div>
       <div style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "1rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: accentColor, textShadow: hov ? `0 0 15px ${accentColor}88` : "none", transition: "text-shadow 0.4s ease", textAlign: "center" }}>
         {label}
-      </div>
-      <div style={{ fontSize: "0.82rem", color: "rgba(216,232,255,0.5)", lineHeight: 1.65, textAlign: "center", maxWidth: "200px" }}>
-        {description}
       </div>
       <div style={{ fontFamily: "var(--font-cinzel), serif", fontSize: "0.7rem", letterSpacing: "0.2em", color: accentColor, opacity: hov ? 1 : 0, transform: hov ? "translateY(0)" : "translateY(4px)", transition: "all 0.3s ease", textTransform: "uppercase" }}>
         Enter →
@@ -254,7 +248,7 @@ export default function Home() {
           {/* ── Hero text ── */}
           <div style={{ textAlign: "center", maxWidth: "780px", marginBottom: "56px" }}>
             {/* Badge */}
-            
+
 
             {/* Title */}
             <h1 style={{
@@ -276,17 +270,7 @@ export default function Home() {
               animation: "slide-up-reveal 0.8s ease 0.4s both",
             }}>✦ &nbsp;Finance of the Gods&nbsp; ✦</div>
 
-            {/* Description */}
-            <p style={{
-              fontSize: "clamp(0.95rem, 2vw, 1.08rem)",
-              color: "rgba(216,232,255,0.55)", lineHeight: 1.85,
-              maxWidth: "540px", margin: "0 auto 44px",
-              animation: "slide-up-reveal 0.8s ease 0.55s both",
-            }}>
-              The official finance management platform for{" "}
-              <span style={{ color: "#ff8c00", fontWeight: 600 }}>Sahasra TechFest</span>.{" "}
-              Select your role to enter the Agora and govern your treasury.
-            </p>
+
 
             {/* Divider */}
             <div className="divider" style={{ marginBottom: "44px", animation: "fade-in 1s ease 0.65s both" }} />
@@ -311,32 +295,19 @@ export default function Home() {
               margin: "0 auto",
             }}>
               <RoleCard
-                icon="🎓" label="Student"
-                description="Track event fees, view payment status, and manage personal allocations."
+                label="Student"
                 accentColor="#ff6600" borderColor="rgba(255,102,0,0.15)" delay="0.8s"
               />
               <RoleCard
-                icon="🏛️" label="Class Rep"
-                description="Manage class-level budgets, submit expense requests, and coordinate with dept."
+                label="Class Rep"
                 accentColor="#ff8c00" borderColor="rgba(255,140,0,0.15)" delay="0.95s"
               />
               <RoleCard
-                icon="📜" label="Dept Rep"
-                description="Oversee department treasury, approve allocations, and generate financial reports."
+                label="Dept Rep"
                 accentColor="#00ff66" borderColor="rgba(0,255,102,0.15)" delay="1.1s"
               />
             </div>
 
-            {/* Coming soon */}
-            <div style={{
-              marginTop: "26px",
-              fontFamily: "var(--font-cinzel), serif",
-              fontSize: "0.6rem", letterSpacing: "0.18em",
-              color: "rgba(216,232,255,0.2)", textTransform: "uppercase",
-              animation: "fade-in 1s ease 1.4s both",
-            }}>
-              More roles coming soon — Organizer &nbsp;·&nbsp; Treasurer &nbsp;·&nbsp; Admin
-            </div>
           </div>
 
           {/* ── Massive Floating bull mascot (bottom-left) ── */}
@@ -381,8 +352,8 @@ export default function Home() {
           <div style={{
             position: "fixed", bottom: "18px", left: "50%", transform: "translateX(-50%)",
             fontFamily: "var(--font-cinzel), serif",
-            fontSize: "0.58rem", letterSpacing: "0.15em",
-            color: "rgba(216,232,255,0.18)", textTransform: "uppercase",
+            fontSize: "0.75rem", letterSpacing: "0.15em",
+            color: "rgba(255,255,255,0.6)", textTransform: "uppercase",
             whiteSpace: "nowrap", zIndex: 10,
             animation: "fade-in 1s ease 1.6s both",
           }}>

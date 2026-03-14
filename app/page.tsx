@@ -279,7 +279,7 @@ export default function Home() {
             <div style={{
               fontFamily: "var(--font-cinzel), serif",
               fontSize: "0.7rem", letterSpacing: "0.3em",
-              textTransform: "uppercase", color: "rgba(216,232,255,0.3)",
+              textTransform: "uppercase", color: "rgba(252, 255, 58, 1)",
               marginBottom: "24px",
               animation: "fade-in 0.8s ease 0.75s both",
             }}>
@@ -311,7 +311,7 @@ export default function Home() {
           </div>
 
           {/* ── Massive Floating bull mascot (bottom-left) ── */}
-          <div style={{
+          <div className="hidden md:block" style={{
             position: "fixed", left: "clamp(-100px, -5vw, -20px)", bottom: "-20vh",
             width: "clamp(500px, 75vw, 1400px)",
             height: "clamp(600px, 90vh, 1600px)",
@@ -330,7 +330,7 @@ export default function Home() {
           </div>
 
           {/* ── Massive Still horse mascot (bottom-right) ── */}
-          <div style={{
+          <div className="hidden md:block" style={{
             position: "fixed", right: "clamp(-150px, -8vw, -20px)", bottom: "-25vh",
             width: "clamp(600px, 85vw, 1600px)",
             height: "clamp(700px, 100vh, 1800px)",
@@ -348,16 +348,36 @@ export default function Home() {
             </div>
           </div>
 
+          {/* ── Massive Center Lion Mascot ── */}
+          <div className="hidden md:block" style={{
+            position: "fixed", left: "50%", bottom: "-15vh", transform: "translateX(-50%)",
+            zIndex: 2, pointerEvents: "none"
+          }}>
+            <div style={{
+              width: "clamp(600px, 85vw, 1600px)",
+              height: "clamp(700px, 95vh, 1800px)",
+              animation: "slide-up-reveal 2s ease 0.4s both",
+              opacity: 0.8,
+              maskImage: "radial-gradient(ellipse at center, black 40%, transparent 95%)",
+              WebkitMaskImage: "radial-gradient(ellipse at center, black 40%, transparent 95%)",
+            }}>
+             
+            </div>
+          </div>
           {/* ── Footer ── */}
-          <div style={{
+          <div className="w-full text-center px-4" style={{
             position: "fixed", bottom: "18px", left: "50%", transform: "translateX(-50%)",
             fontFamily: "var(--font-cinzel), serif",
-            fontSize: "0.75rem", letterSpacing: "0.15em",
+            fontSize: "clamp(0.5rem, 2.5vw, 0.75rem)", letterSpacing: "0.15em",
             color: "rgba(255,255,255,0.6)", textTransform: "uppercase",
-            whiteSpace: "nowrap", zIndex: 10,
+            zIndex: 10,
             animation: "fade-in 1s ease 1.6s both",
           }}>
-            © 2026 Sahasra TechFest &nbsp;·&nbsp; NAGORA Finance &nbsp;·&nbsp; Built for Olympians
+            <span className="block md:inline">© 2026 Sahasra TechFest</span>
+            <span className="hidden md:inline">&nbsp;·&nbsp;</span>
+            <span className="block md:inline mt-1 md:mt-0">NAGORA Finance</span>
+            <span className="hidden md:inline">&nbsp;·&nbsp;</span>
+            <span className="block md:inline mt-1 md:mt-0">Built for Olympians</span>
           </div>
         </main>
       )}

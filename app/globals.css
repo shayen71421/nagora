@@ -433,6 +433,10 @@ body {
   .hero-title {
     font-size: clamp(2.8rem, 12vw, 5rem) !important;
   }
+
+  .desktop-mascot {
+    display: none !important;
+  }
 }
 
 @media (max-width: 480px) {
